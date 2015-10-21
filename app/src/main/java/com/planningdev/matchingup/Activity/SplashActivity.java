@@ -27,6 +27,8 @@ public class SplashActivity extends Activity {
 
         // ユーザー登録済みかどうか
 
+        Log.d("ww","ee");
+
         Map<String, String> params = new HashMap<String, String>();
         params.put("ptype","apis");
         params.put("action", "newslist");
