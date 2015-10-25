@@ -3,8 +3,10 @@ package com.planningdev.matchingup.Activity;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.test.RenamingDelegatingContext;
 import android.util.Log;
 
+import com.planningdev.matchingup.DB.DB;
 import com.planningdev.matchingup.Model.ApiConnect;
 import com.planningdev.matchingup.R;
 import com.planningdev.matchingup.Setting.Config;
@@ -62,5 +64,8 @@ public class SplashActivity extends Activity {
                 }*/
             }
         }, 3000);
+
+         /* DBのセッティング */
+        boolean result = DB.setDB(getApplicationContext());
     }
 }
