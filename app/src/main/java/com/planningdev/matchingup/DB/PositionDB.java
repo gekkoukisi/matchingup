@@ -2,37 +2,40 @@ package com.planningdev.matchingup.DB;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.planningdev.matchingup.Model.Position;
 import com.planningdev.matchingup.Setting.Config;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by tokio on 10/25/15.
+ * Created by tokio on 10/20/15.
  */
 public class PositionDB extends DB{
 
     // テーブル名
     private static String TABLE_NAME = "positions";
     // テーブル作成SQL
-    private static String CREATE_TABLE_SQL = "create table " + TABLE_NAME
-                                  + " ( [_id] int not null primary key,"
-                                  +   " [_name] string );";
+    protected static String CREATE_TABLE_SQL = "create table " + TABLE_NAME
+            + " ( [_id] int not null primary key,"
+            +   " [_name] string"
+            +   " );";
+
 
     public static void createTableIfNotExist(SQLiteDatabase db){
         if(isExistTable(db)) return;
         db.execSQL(CREATE_TABLE_SQL);
     }
-
     // カーソルからオブジェクト生成
     public static Position getPositionFromCorsor(Cursor c){
         Bundle bundle = new Bundle();
         bundle.putInt("id", c.getInt(0));
-        bundle.putString("name",c.getString(1));
+        bundle.putString("name", c.getString(1));
         return new Position(bundle);
     }
 
@@ -63,6 +66,13 @@ public class PositionDB extends DB{
         return positions;
     }
 
+    // 存在確認
+    public static boolean isExistData(int id, SQLiteDatabase db) throws Exception{
+        String sql = "select count(*) from "+TABLE_NAME+" where [_id] = "+id+";";
+        Cursor c = db.rawQuery(sql, null);
+        c.moveToFirst();
+        return c.getInt(0) != 0;
+    }
     /***********************************/
     /*              INSERT             */
     /***********************************/
@@ -72,7 +82,7 @@ public class PositionDB extends DB{
         return true;
     }
 
-     // SQL生成関数
+    // SQL生成関数
     public static String createInsertSQL(Position position) {
         String sql = "insert into " + TABLE_NAME + " ( "
                 + " [_id],"
@@ -89,18 +99,13 @@ public class PositionDB extends DB{
     /***********************************/
     public static boolean update(Position position, SQLiteDatabase db){
         String sql = createUpdateSQL(position);
-        try{
-            db.execSQL(sql);
-            return true;
-        }catch(Exception e){
-            Log.d(Config.LOG_TRYCATCH, "position update error => "+e.getLocalizedMessage());
-            return false;
-        }
+        db.execSQL(sql);
+        return true;
     }
 
     public static String createUpdateSQL(Position position){
         String sql = "update "+TABLE_NAME+" set "
-                + " [_name] = " + position.name
+                + " [_name] =  '"+ position.name +"'"
                 + " where [_id] = "+position.id+" ;";
         return sql;
     }
@@ -110,18 +115,13 @@ public class PositionDB extends DB{
     /***********************************/
     public static boolean delete(Position position, SQLiteDatabase db){
         String sql = createDeleteSQL(position);
-        try{
-            db.execSQL(sql);
-            return true;
-        }catch(Exception e){
-            Log.d(Config.LOG_TRYCATCH, "position delete error => " + e.getLocalizedMessage());
-            return false;
-        }
+        db.execSQL(sql);
+        return true;
     }
 
     public static String createDeleteSQL(Position position){
-        String sql = "delete "+TABLE_NAME
-                   + " where [_id] = "+position.id+" ;";
+        String sql = "delete from "+TABLE_NAME
+                + " where [_id] = "+position.id+" ;";
         return sql;
     }
 
