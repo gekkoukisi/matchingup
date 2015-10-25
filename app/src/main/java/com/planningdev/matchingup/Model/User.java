@@ -51,8 +51,23 @@ public class User extends BaseModel{
         UserDB.createTableIfNotExist(db);
     }
 
+    public boolean isExist( SQLiteDatabase readableDB) throws Exception {
+        return UserDB.isExistData( this.id, readableDB);
+    }
+
     public boolean save( SQLiteDatabase writableDB) throws Exception {
-        return UserDB.insert(this, writableDB);
+        if(isExist(writableDB)) {
+            return UserDB.update(this, writableDB);
+        }else{
+            return UserDB.insert(this, writableDB);
+        }
+    }
+
+    public boolean delete( SQLiteDatabase writableDB) throws Exception {
+        if(isExist(writableDB)) {
+            return UserDB.delete(this, writableDB);
+        }
+        return true;
     }
 
     public static User getUserById(int id, SQLiteDatabase readableDB){

@@ -73,6 +73,13 @@ public class UserDB extends DB{
         return users;
     }
 
+    // 存在確認
+    public static boolean isExistData(int id, SQLiteDatabase db) throws Exception{
+        String sql = "select count(*) from "+TABLE_NAME+" where [_id] = "+id+";";
+        Cursor c = db.rawQuery(sql, null);
+        c.moveToFirst();
+        return c.getInt(0) != 0;
+    }
     /***********************************/
     /*              INSERT             */
     /***********************************/
@@ -107,23 +114,17 @@ public class UserDB extends DB{
     /***********************************/
     public static boolean update(User user, SQLiteDatabase db){
         String sql = createUpdateSQL(user);
-        try{
-            db.execSQL(sql);
-            return true;
-        }catch(Exception e){
-            Log.d(Config.LOG_TRYCATCH, "user update error => "+e.getLocalizedMessage());
-            return false;
-        }
+        db.execSQL(sql);
+        return true;
     }
 
     public static String createUpdateSQL(User user){
         String sql = "update "+TABLE_NAME+" set "
-                + " [_name] = " + user.name
-                + " ,[_vision] = " + user.vision
-                + " ,[_skill] = " + user.skill
+                + " [_name] =  '"+ user.name +"'"
+                + " ,[_vision] = '" + user.vision +"'"
+                + " ,[_skill] = '" + user.skill +"'"
                 + " ,[_position_id] = " + user.positionId
                 + " ,[_is_relation] = " + DB.boolToInt(user.isRelation)
-                + " ,[_skill] = " + user.skill
                 + " where [_id] = "+user.id+" ;";
         return sql;
     }
@@ -133,17 +134,12 @@ public class UserDB extends DB{
     /***********************************/
     public static boolean delete(User user, SQLiteDatabase db){
         String sql = createDeleteSQL(user);
-        try{
-            db.execSQL(sql);
-            return true;
-        }catch(Exception e){
-            Log.d(Config.LOG_TRYCATCH, "user delete error => "+e.getLocalizedMessage());
-            return false;
-        }
+        db.execSQL(sql);
+        return true;
     }
 
     public static String createDeleteSQL(User user){
-        String sql = "delete "+TABLE_NAME
+        String sql = "delete from "+TABLE_NAME
                    + " where [_id] = "+user.id+" ;";
         return sql;
     }

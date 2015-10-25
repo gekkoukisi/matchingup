@@ -23,6 +23,11 @@ public class PositionDB extends DB{
                                   + " ( [_id] int not null primary key,"
                                   +   " [_name] string );";
 
+    public static void createTableIfNotExist(SQLiteDatabase db){
+        if(isExistTable(db)) return;
+        db.execSQL(CREATE_TABLE_SQL);
+    }
+
     // カーソルからオブジェクト生成
     public static Position getPositionFromCorsor(Cursor c){
         Bundle bundle = new Bundle();
@@ -61,15 +66,10 @@ public class PositionDB extends DB{
     /***********************************/
     /*              INSERT             */
     /***********************************/
-    public static boolean insert(Position position, SQLiteDatabase db){
+    public static boolean insert(Position position, SQLiteDatabase db) throws Exception{
         String sql = createInsertSQL(position);
-        try{
-            db.execSQL(sql);
-            return true;
-        }catch(Exception e){
-            Log.d(Config.LOG_TRYCATCH, "position insert error => "+e.getLocalizedMessage());
-            return false;
-        }
+        db.execSQL(sql);
+        return true;
     }
 
      // SQL生成関数
@@ -123,5 +123,10 @@ public class PositionDB extends DB{
         String sql = "delete "+TABLE_NAME
                    + " where [_id] = "+position.id+" ;";
         return sql;
+    }
+
+    public static void dropDB(SQLiteDatabase db){
+        String sql = "drop table "+TABLE_NAME+";";
+        db.execSQL(sql);
     }
 }
